@@ -1,0 +1,13 @@
+<?php
+
+namespace App\Admin;
+
+use Enomotodev\LaractiveAdmin\Http\Controllers\Controller;
+
+class AdminUser extends Controller
+{
+    /**
+     * @var string
+     */
+    public $model = \Enomotodev\LaractiveAdmin\AdminUser::class;
+}
