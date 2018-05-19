@@ -15,7 +15,13 @@ Require this package with composer using the following command:
 composer require enomotodev/laractive-admin
 ```
 
-After updating composer, Run the installer
+After updating composer, add the service provider to the providers array in config/app.php
+
+```php
+Enomotodev\LaractiveAdmin\ServiceProvider::class,
+```
+
+Run the installer
 
 ```bash
 php artisan laractive-admin:install
