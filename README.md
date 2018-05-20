@@ -1,5 +1,7 @@
 # Laractive Admin
 
+[![Latest Stable Version](https://poser.pugx.org/enomotodev/laractive-admin/v/stable.png)](https://packagist.org/packages/enomotodev/laractive-admin)
+
 Laractive Admin is a Laravel framework for
 creating elegant backends for website administration.
 
