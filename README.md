@@ -27,7 +27,7 @@ Run the installer
 php artisan laractive-admin:install
 ```
 
-The installer creates an initializer used for configuring defaults used by Active Admin as well as a new folder at app/Admin to put all your admin configurations.
+The installer creates an initializer used for configuring defaults used by Laractive Admin as well as a new folder at app/Admin to put all your admin configurations.
 
 Migrate your database
 
