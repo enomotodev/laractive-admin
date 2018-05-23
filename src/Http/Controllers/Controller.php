@@ -74,7 +74,8 @@ abstract class Controller
      */
     public function index()
     {
-        $columns = \DB::select("DESCRIBE {$this->getTable()}");
+        $model = $this->model::newModelInstance();
+        $columns = $this->getColumnsFromTable($model);
         $collection = $this->model::paginate();
 
         return new HtmlString(
@@ -111,8 +112,8 @@ abstract class Controller
      */
     public function new()
     {
-        $columns = \DB::select("DESCRIBE {$this->getTable()}");
         $model = $this->model::newModelInstance();
+        $columns = $this->getColumnsFromTable($model);
         $relations = $this->getRelations();
 
         return new HtmlString(
@@ -174,8 +175,8 @@ abstract class Controller
      */
     public function edit(int $id)
     {
-        $columns = \DB::select("DESCRIBE {$this->getTable()}");
         $model = $this->model::findOrFail($id);
+        $columns = $this->getColumnsFromTable($model);
         $relations = $this->getRelations();
 
         return new HtmlString(
@@ -310,5 +311,69 @@ abstract class Controller
         } catch (ReflectionException $e) {
             return '';
         }
+    }
+
+    /**
+     * @param  \Illuminate\Database\Eloquent\Model  $model
+     * @return array
+     */
+    protected function getColumnsFromTable($model)
+    {
+        $table = $model->getConnection()->getTablePrefix().$model->getTable();
+        $schema = $model->getConnection()->getDoctrineSchemaManager($table);
+        $databasePlatform = $schema->getDatabasePlatform();
+        $databasePlatform->registerDoctrineTypeMapping('enum', 'string');
+
+        $database = null;
+        if (strpos($table, '.')) {
+            list($database, $table) = explode('.', $table);
+        }
+
+        $listTableColumns = $schema->listTableColumns($table, $database);
+
+        $columns = [];
+        if ($listTableColumns) {
+            foreach ($listTableColumns as $column) {
+                $name = $column->getName();
+
+                switch ($column->getType()->getName()) {
+                    case 'string':
+                        $type = 'string';
+                        break;
+                    case 'text':
+                        $type = 'text';
+                        break;
+                    case 'date':
+                        $type = 'date';
+                        break;
+                    case 'time':
+                        $type = 'time';
+                        break;
+                    case 'datetimetz':
+                    case 'datetime':
+                        $type = 'datetime';
+                        break;
+                    case 'integer':
+                    case 'bigint':
+                    case 'smallint':
+                        $type = 'integer';
+                        break;
+                    case 'boolean':
+                        $type = 'boolean';
+                        break;
+                    case 'decimal':
+                    case 'float':
+                        $type = 'float';
+                        break;
+                    default:
+                        $type = 'mixed';
+                        break;
+                }
+
+                $columns[$name] = $type;
+            }
+        }
+
+        return $columns;
     }
 }

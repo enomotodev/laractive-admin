@@ -10,28 +10,28 @@
             </div>
         @endif
 
-        @foreach ($columns as $column)
-            @continue($column->Extra === 'auto_increment' || $column->Field === 'created_at' || $column->Field === 'updated_at')
+        @foreach ($columns as $name => $type)
+            @continue($name === $model->getKeyName() || $name === 'created_at' || $name === 'updated_at')
 
-            <div class="form-group{{ $errors->has($column->Field) ? ' has-error' : '' }}">
-                <label>{!! Form::label($column->Field) !!}</label>
-                @if ($column->Field === 'password')
-                    {!! Form::password($column->Field, ['class' => 'form-control']) !!}
-                @elseif (in_array($column->Field, $files))
-                    {!! Form::file($column->Field) !!}
-                    @if (!empty($model->{$column->Field}))
-                        <img src="{{ Storage::url("{$table}/".$model->{$column->Field}) }}" style="margin: 5px; max-height: 100px;" />
+            <div class="form-group{{ $errors->has($name) ? ' has-error' : '' }}">
+                <label>{!! Form::label($name) !!}</label>
+                @if ($name === 'password')
+                    {!! Form::password($name, ['class' => 'form-control']) !!}
+                @elseif (in_array($name, $files))
+                    {!! Form::file($name) !!}
+                    @if (!empty($model->{$name}))
+                        <img src="{{ Storage::url("{$table}/".$model->{$name}) }}" style="margin: 5px; max-height: 100px;" />
                     @endif
-                @elseif (isset($relations[$column->Field]) && $relations[$column->Field]['type'] === 'BelongsTo')
-                    {!! Form::select($column->Field, $relations[$column->Field]['model']::pluck('name', 'id')->toArray(), null, ['class' => 'form-control']) !!}
-                @elseif ($column->Type === 'text')
-                    {!! Form::textarea($column->Field, null, ['class' => 'form-control']) !!}
-                @elseif ($column->Type === 'tinyint(1)')
+                @elseif (isset($relations[$name]) && $relations[$name]['type'] === 'BelongsTo')
+                    {!! Form::select($name, $relations[$name]['model']::pluck('name', 'id')->toArray(), null, ['class' => 'form-control']) !!}
+                @elseif ($type === 'text')
+                    {!! Form::textarea($name, null, ['class' => 'form-control']) !!}
+                @elseif ($type === 'boolean')
                     <label class="checkbox-inline">
-                        {!! Form::checkbox($column->Field, 1, null) !!}
+                        {!! Form::checkbox($name, 1, null) !!}
                     </label>
                 @else
-                    {!! Form::text($column->Field, null, ['class' => 'form-control']) !!}
+                    {!! Form::text($name, null, ['class' => 'form-control']) !!}
                 @endif
             </div>
         @endforeach

@@ -19,8 +19,8 @@
                 <table class="table table-hover text-nowrap">
                     <thead>
                     <tr>
-                        @foreach ($columns as $column)
-                            <td>{{ $column->Field }}</td>
+                        @foreach ($columns as $name => $type)
+                            <td>{{ $name }}</td>
                         @endforeach
                         <td>&nbsp;</td>
                     </tr>
@@ -28,8 +28,8 @@
                     <tbody>
                     @forelse ($collection as $model)
                         <tr>
-                            @foreach ($model->getAttributes() as $value)
-                                <td>{{ $value }}</td>
+                            @foreach ($columns as $name => $type)
+                                <td>{{ $model->{$name} }}</td>
                             @endforeach
                             <td style="display:inline-flex">
                                 {!! Form::model($model, ['route' => ["admin.{$table}.destroy", $model->id], 'method' => 'DELETE']) !!}
