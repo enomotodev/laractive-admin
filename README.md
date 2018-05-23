@@ -42,6 +42,24 @@ Visit http://yourdomain.com/admin and log in using:
 - **User**: admin@example.com
 - **Password**: password
 
+If you want to customize route prefix, Copy the package config to your local config with the publish command:
+
+```bash
+php artisan vendor:publish --provider="Enomotodev\LaractiveAdmin\ServiceProvider"
+```
+
+And edit `config/laractive-admin.php` file
+
+```php
+<?php
+
+return [
+    'route_prefix' => 'example-admin',
+];
+```
+
+Then you can access with http://yourdomain.com/example-admin
+
 ## License
 
 Laractive Admin is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT)

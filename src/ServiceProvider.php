@@ -19,12 +19,14 @@ class ServiceProvider extends BaseServiceProvider
      */
     public function boot()
     {
+        $this->publishes([$this->configPath() => config_path('laractive-admin.php')], 'config');
+
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'laractive-admin');
 
         $routeConfig = [
             'middleware' => ['web', 'laractive-admin'],
             'namespace' => 'App\Admin',
-            'prefix' => 'admin',
+            'prefix' => $this->app['config']->get('laractive-admin.route_prefix'),
             'as' => 'admin.',
             'where' => [
                 'id' => '[0-9]+',
@@ -91,16 +93,19 @@ class ServiceProvider extends BaseServiceProvider
         }
 
         // Authentication
-        $this->getRouter()->group(['middleware' => ['web']], function($router) {
+        $this->getRouter()->group([
+            'middleware' => ['web'],
+            'prefix' => $this->app['config']->get('laractive-admin.route_prefix'),
+        ], function($router) {
             /** @var $router \Illuminate\Routing\Router */
-            $router->get('admin/login', [
+            $router->get('login', [
                 'uses' => '\Enomotodev\LaractiveAdmin\Http\Controllers\Auth\LoginController@showLoginForm',
                 'as' => 'admin.login',
             ]);
-            $router->post('admin/login', [
+            $router->post('login', [
                 'uses' => '\Enomotodev\LaractiveAdmin\Http\Controllers\Auth\LoginController@login',
             ]);
-            $router->get('admin/logout', [
+            $router->get('logout', [
                 'uses' => '\Enomotodev\LaractiveAdmin\Http\Controllers\Auth\LoginController@logout',
                 'as' => 'admin.logout',
             ]);
@@ -114,6 +119,8 @@ class ServiceProvider extends BaseServiceProvider
      */
     public function register()
     {
+        $this->mergeConfigFrom($this->configPath(), 'laractive-admin');
+
         $this->app->register(HtmlServiceProvider::class);
 
         $this->app->alias('Form', FormFacade::class);
@@ -145,6 +152,14 @@ class ServiceProvider extends BaseServiceProvider
 
         $this->commands(['command.laractive-admin.install']);
         $this->commands(['command.laractive-admin.seed']);
+    }
+
+    /**
+     * @return string
+     */
+    protected function configPath()
+    {
+        return __DIR__ . '/../config/laractive-admin.php';
     }
 
     /**
