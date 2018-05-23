@@ -199,7 +199,7 @@ abstract class Controller
     public function update(Request $request, int $id)
     {
         $model = $this->model::findOrFail($id);
-        $inputs = array_filter($request->post(), function ($item) {
+        $inputs = $this->validate ? $request->validate($this->validate) : array_filter($request->post(), function ($item) {
             return $item !== null;
         });
         if (isset($inputs['password'])) {
