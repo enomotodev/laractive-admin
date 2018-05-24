@@ -58,11 +58,16 @@ class InstallCommand extends Command
      */
     protected function createMigration()
     {
-        $fullPath = $this->createBaseMigration();
+        $migrations = [
+            'create_admin_users_table',
+            'create_laractive_admin_comments_table',
+        ];
 
         try {
-            $this->files->put($fullPath, $this->files->get(__DIR__ . '/stubs/database.stub'));
-
+            foreach ($migrations as $migration) {
+                $fullPath = $this->createBaseMigration($migration);
+                $this->files->put($fullPath, $this->files->get(__DIR__ . "/stubs/{$migration}.stub"));
+            }
             $this->composer->dumpAutoloads();
         } catch (FileNotFoundException $exception) {
             $this->error($exception->getMessage());
@@ -70,12 +75,11 @@ class InstallCommand extends Command
     }
 
     /**
-     * @return string
+     * @param  string  $name
+     * @return mixed
      */
-    protected function createBaseMigration()
+    protected function createBaseMigration($name)
     {
-        $name = 'create_admin_users_table';
-
         $path = $this->laravel->databasePath().'/migrations';
 
         return $this->laravel['migration.creator']->create($name, $path);

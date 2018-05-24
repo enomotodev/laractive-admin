@@ -96,6 +96,9 @@ abstract class Controller
     public function show(int $id)
     {
         $model = $this->model::findOrFail($id);
+        $commentColumns = array_filter($this->getColumnsFromTable($model->comments()->getRelated()), function ($type, $name) use ($model) {
+            return !in_array($name, ['id', 'updated_at', $model->comments()->getForeignKeyName(), $model->comments()->getMorphType()]);
+        }, ARRAY_FILTER_USE_BOTH);
 
         return new HtmlString(
             view()->make(static::$defaultShowView, [
@@ -103,6 +106,7 @@ abstract class Controller
                 'table' => $this->getTable(),
                 'layoutView' => static::$defaultLayoutView,
                 'model' => $model,
+                'commentColumns' => $commentColumns,
             ])->render()
         );
     }
@@ -247,6 +251,26 @@ abstract class Controller
         $request->session()->flash('message', 'Delete');
 
         return redirect(route("admin.{$this->getTable()}.index"));
+    }
+
+    /**
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
+    public function comments(Request $request, int $id)
+    {
+        $model = $this->model::findOrFail($id);
+        $inputs = $request->validate([
+            'body' => 'required',
+        ]);
+        $model->comments()->create([
+            'body' => $inputs['body'],
+        ]);
+
+        $request->session()->flash('message', 'Create comment');
+
+        return redirect(route("admin.{$this->getTable()}.show", [$model->id]));
     }
 
     /**

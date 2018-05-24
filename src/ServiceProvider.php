@@ -77,6 +77,10 @@ class ServiceProvider extends BaseServiceProvider
                         'uses' => "\App\Admin\\{$className}@destroy",
                         'as' => "{$routePrefix}.destroy",
                     ]);
+                    $router->post("{$routePrefix}/{id}/comments", [
+                        'uses' => "\App\Admin\\{$className}@comments",
+                        'as' => "{$routePrefix}.comments",
+                    ]);
 
                     app(Menu::class)->setPage([
                         'name' => $className,
@@ -109,6 +113,10 @@ class ServiceProvider extends BaseServiceProvider
                 'uses' => '\Enomotodev\LaractiveAdmin\Http\Controllers\Auth\LoginController@logout',
                 'as' => 'admin.logout',
             ]);
+        });
+
+        \Illuminate\Database\Eloquent\Builder::macro('comments', function () {
+            return $this->getModel()->morphMany(LaractiveAdminComment::class, 'commentable');
         });
     }
 
