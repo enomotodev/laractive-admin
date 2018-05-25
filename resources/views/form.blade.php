@@ -30,6 +30,12 @@
                     <label class="checkbox-inline">
                         {!! Form::checkbox($name, 1, null) !!}
                     </label>
+                @elseif ($type === 'datetime')
+                    {!! Form::text($name, null, ['class' => 'form-control datetimepicker']) !!}
+                @elseif ($type === 'date')
+                    {!! Form::text($name, null, ['class' => 'form-control datepicker']) !!}
+                @elseif ($type === 'time')
+                    {!! Form::text($name, null, ['class' => 'form-control timepicker']) !!}
                 @else
                     {!! Form::text($name, null, ['class' => 'form-control']) !!}
                 @endif
