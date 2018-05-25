@@ -8,6 +8,7 @@ use Collective\Html\HtmlFacade;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Enomotodev\LaractiveAdmin\Http\Middleware\LaractiveAdminAuthenticate;
 use Enomotodev\LaractiveAdmin\Console\InstallCommand;
+use Enomotodev\LaractiveAdmin\Console\UninstallCommand;
 use Enomotodev\LaractiveAdmin\Console\SeedCommand;
 
 class ServiceProvider extends BaseServiceProvider
@@ -154,11 +155,15 @@ class ServiceProvider extends BaseServiceProvider
         $this->app->singleton('command.laractive-admin.install', function ($app) {
             return new InstallCommand($app['files'], $app['composer']);
         });
+        $this->app->singleton('command.laractive-admin.uninstall', function ($app) {
+            return new UninstallCommand($app['files'], $app['composer']);
+        });
         $this->app->singleton('command.laractive-admin.seed', function () {
             return new SeedCommand;
         });
 
         $this->commands(['command.laractive-admin.install']);
+        $this->commands(['command.laractive-admin.uninstall']);
         $this->commands(['command.laractive-admin.seed']);
     }
 
