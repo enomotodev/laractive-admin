@@ -2,6 +2,8 @@
 
 [![Latest Stable Version](https://poser.pugx.org/enomotodev/laractive-admin/v/stable.png)](https://packagist.org/packages/enomotodev/laractive-admin)
 [![Build Status](https://api.travis-ci.org/enomotodev/laractive-admin.svg?branch=master)](https://travis-ci.org/enomotodev/laractive-admin)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/enomotodev/laractive-admin/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/enomotodev/laractive-admin)
+[![Code Coverage](https://scrutinizer-ci.com/g/enomotodev/laractive-admin/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/enomotodev/laractive-admin)
 
 Laractive Admin is a Laravel framework for
 creating elegant backends for website administration.
