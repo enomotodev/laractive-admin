@@ -71,6 +71,8 @@ abstract class Controller
 
     /**
      * @return \Illuminate\Support\HtmlString
+     *
+     * @throws \Throwable
      */
     public function index()
     {
@@ -92,6 +94,8 @@ abstract class Controller
     /**
      * @param  int  $id
      * @return \Illuminate\Support\HtmlString
+     *
+     * @throws \Throwable
      */
     public function show(int $id)
     {
@@ -113,6 +117,8 @@ abstract class Controller
 
     /**
      * @return \Illuminate\Support\HtmlString
+     *
+     * @throws \Throwable
      */
     public function new()
     {
@@ -145,7 +151,7 @@ abstract class Controller
         if (isset($inputs['password'])) {
             $inputs['password'] = \Hash::make($inputs['password']);
         }
-        if ($this->files) {
+        if (!empty($this->files)) {
             $files = array_filter($inputs, function ($item, $key) {
                 return in_array($key, $this->files) && $item instanceof UploadedFile;
             }, ARRAY_FILTER_USE_BOTH);
@@ -176,6 +182,8 @@ abstract class Controller
     /**
      * @param  int  $id
      * @return \Illuminate\Support\HtmlString
+     *
+     * @throws \Throwable
      */
     public function edit(int $id)
     {
@@ -210,7 +218,7 @@ abstract class Controller
         if (isset($inputs['password'])) {
             $inputs['password'] = \Hash::make($inputs['password']);
         }
-        if ($this->files) {
+        if (!empty($this->files)) {
             $files = array_filter($inputs, function ($item, $key) {
                 return in_array($key, $this->files) && $item instanceof UploadedFile;
             }, ARRAY_FILTER_USE_BOTH);
@@ -317,9 +325,11 @@ abstract class Controller
                         ];
                     }
                 } catch (ReflectionException $e) {
+                    // Ignore exception
                 }
             }
         } catch (ReflectionException $e) {
+            // Ignore exception
         }
 
         return $relations;
@@ -338,8 +348,10 @@ abstract class Controller
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Model  $model
+     * @param  \Illuminate\Database\Eloquent\Model $model
      * @return array
+     *
+     * @throws \Throwable
      */
     protected function getColumnsFromTable($model)
     {
