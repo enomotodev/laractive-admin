@@ -40,6 +40,8 @@ class TestCase extends BaseTestCase
 
     public function setUp()
     {
+        $this->copyAdminFile();
+
         parent::setUp();
 
         $this->app['config']->set('app.key', "base64:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=");
@@ -51,7 +53,6 @@ class TestCase extends BaseTestCase
         $this->app['config']->set('database.connections.mysql.password', env('DB_PASSWORD'));
 
         $this->copyMigrationFile();
-        $this->copyAdminFile();
 
         $this->artisan('migrate:refresh');
 
@@ -85,7 +86,7 @@ class TestCase extends BaseTestCase
 
     protected function copyAdminFile()
     {
-        if (! is_dir($directory = app_path('Admin'))) {
+        if (! is_dir($directory = __DIR__.'/../vendor/laravel/laravel/app/Admin')) {
             mkdir($directory, 0755, true);
         }
 
