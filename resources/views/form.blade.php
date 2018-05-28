@@ -24,6 +24,14 @@
                     @endif
                 @elseif (isset($relations[$name]) && $relations[$name]['type'] === 'BelongsTo')
                     {!! Form::select($name, $relations[$name]['model']::pluck('name', 'id')->toArray(), null, ['class' => 'form-control']) !!}
+                @elseif (!empty($enum[$name]))
+                    @foreach ($enum[$name] as $key => $value)
+                        <div class="radio">
+                            <label>
+                                {!! Form::radio($name, $value, null) !!}{{ $key }}
+                            </label>
+                        </div>
+                    @endforeach
                 @elseif ($type === 'text')
                     {!! Form::textarea($name, null, ['class' => 'form-control']) !!}
                 @elseif ($type === 'boolean')

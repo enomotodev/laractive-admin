@@ -11,7 +11,13 @@
                     @foreach ($model->getAttributes() as $key => $value)
                         <tr>
                             <td>{{ $key }}</td>
-                            <td>{{ $value }}</td>
+                            <td>
+                                @if (!empty($enum[$key]))
+                                    {{ array_search($value, $enum[$key])  }}
+                                @else
+                                    {{ $value }}
+                                @endif
+                            </td>
                         </tr>
                     @endforeach
                     </tbody>

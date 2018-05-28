@@ -30,6 +30,11 @@ abstract class Controller
     protected $validate = [];
 
     /**
+     * @var array
+     */
+    protected $enum = [];
+
+    /**
      * The default layout view.
      *
      * @var string
@@ -87,6 +92,7 @@ abstract class Controller
                 'layoutView' => static::$defaultLayoutView,
                 'columns' => $columns,
                 'collection' => $collection,
+                'enum' => $this->enum,
             ])->render()
         );
     }
@@ -111,6 +117,7 @@ abstract class Controller
                 'layoutView' => static::$defaultLayoutView,
                 'model' => $model,
                 'commentColumns' => $commentColumns,
+                'enum' => $this->enum,
             ])->render()
         );
     }
@@ -135,6 +142,7 @@ abstract class Controller
                 'model' => $model,
                 'relations' => $relations,
                 'files' => $this->files,
+                'enum' => $this->enum,
             ])->render()
         );
     }
@@ -200,6 +208,7 @@ abstract class Controller
                 'model' => $model,
                 'relations' => $relations,
                 'files' => $this->files,
+                'enum' => $this->enum,
             ])->render()
         );
     }

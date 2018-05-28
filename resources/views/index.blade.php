@@ -29,7 +29,13 @@
                     @forelse ($collection as $model)
                         <tr>
                             @foreach ($columns as $name => $type)
-                                <td>{{ $model->{$name} }}</td>
+                                <td>
+                                    @if (!empty($enum[$name]))
+                                        {{ array_search($model->{$name}, $enum[$name])  }}
+                                    @else
+                                        {{ $model->{$name} }}
+                                    @endif
+                                </td>
                             @endforeach
                             <td style="display:inline-flex">
                                 {!! Form::model($model, ['route' => ["admin.{$table}.destroy", $model->id], 'method' => 'DELETE']) !!}
