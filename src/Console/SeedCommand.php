@@ -10,6 +10,16 @@ class SeedCommand extends Command
     /**
      * @var string
      */
+    const ADMIN_USER_EMAIL = 'admin@example.com';
+
+    /**
+     * @var string
+     */
+    const ADMIN_USER_PASSWORD = 'password';
+
+    /**
+     * @var string
+     */
     protected $name = 'laractive-admin:seed';
 
     /**
@@ -24,8 +34,8 @@ class SeedCommand extends Command
     {
         if (!AdminUser::where('email', 'admin@example.com')->first()) {
             AdminUser::create([
-                'email' => 'admin@example.com',
-                'password' => \Hash::make('password'),
+                'email' => self::ADMIN_USER_EMAIL,
+                'password' => \Hash::make(self::ADMIN_USER_PASSWORD),
             ]);
         }
 
