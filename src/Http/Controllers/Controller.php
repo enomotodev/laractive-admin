@@ -159,18 +159,7 @@ abstract class Controller
         if (isset($inputs['password'])) {
             $inputs['password'] = \Hash::make($inputs['password']);
         }
-        if (!empty($this->files)) {
-            $files = array_filter($inputs, function ($item, $key) {
-                return in_array($key, $this->files) && $item instanceof UploadedFile;
-            }, ARRAY_FILTER_USE_BOTH);
-
-            foreach ($files as $key => $file) {
-                $fileName = Str::random(32).".".$request->{$key}->extension();
-                $request->{$key}->storePubliclyAs("public/{$this->getTable()}", $fileName);
-
-                $inputs[$key] = $fileName;
-            }
-        }
+        $inputs = $this->getInputsWithFiles($request, $inputs);
         $model = $this->model::create($inputs);
         foreach ($this->getRelations() as $key => $relation) {
             if ($relation['type'] !== 'BelongsToMany') {
@@ -227,18 +216,7 @@ abstract class Controller
         if (isset($inputs['password'])) {
             $inputs['password'] = \Hash::make($inputs['password']);
         }
-        if (!empty($this->files)) {
-            $files = array_filter($inputs, function ($item, $key) {
-                return in_array($key, $this->files) && $item instanceof UploadedFile;
-            }, ARRAY_FILTER_USE_BOTH);
-
-            foreach ($files as $key => $file) {
-                $fileName = Str::random(32).".".$request->{$key}->extension();
-                $request->{$key}->storePubliclyAs("public/{$this->getTable()}", $fileName);
-
-                $inputs[$key] = $fileName;
-            }
-        }
+        $inputs = $this->getInputsWithFiles($request, $inputs);
         $model->update($inputs);
         foreach ($this->getRelations() as $key => $relation) {
             if ($relation['type'] !== 'BelongsToMany') {
@@ -380,45 +358,58 @@ abstract class Controller
         if ($listTableColumns) {
             foreach ($listTableColumns as $column) {
                 $name = $column->getName();
-
-                switch ($column->getType()->getName()) {
-                    case 'string':
-                        $type = 'string';
-                        break;
-                    case 'text':
-                        $type = 'text';
-                        break;
-                    case 'date':
-                        $type = 'date';
-                        break;
-                    case 'time':
-                        $type = 'time';
-                        break;
-                    case 'datetimetz':
-                    case 'datetime':
-                        $type = 'datetime';
-                        break;
-                    case 'integer':
-                    case 'bigint':
-                    case 'smallint':
-                        $type = 'integer';
-                        break;
-                    case 'boolean':
-                        $type = 'boolean';
-                        break;
-                    case 'decimal':
-                    case 'float':
-                        $type = 'float';
-                        break;
-                    default:
-                        $type = 'mixed';
-                        break;
-                }
-
-                $columns[$name] = $type;
+                $columns[$name] = $this->convertColumnTypeName($column->getType()->getName());
             }
         }
 
         return $columns;
+    }
+
+    /**
+     * @param  \Illuminate\Http\Request $request
+     * @param  array $inputs
+     * @return array
+     */
+    protected function getInputsWithFiles($request, $inputs)
+    {
+        if (! empty($this->files)) {
+            $files = array_filter($inputs, function ($item, $key) {
+                return in_array($key, $this->files) && $item instanceof UploadedFile;
+            }, ARRAY_FILTER_USE_BOTH);
+
+            foreach ($files as $key => $file) {
+                $fileName = Str::random(32).".".$request->{$key}->extension();
+                $request->{$key}->storePubliclyAs("public/{$this->getTable()}", $fileName);
+
+                $inputs[$key] = $fileName;
+            }
+        }
+
+        return $inputs;
+    }
+
+    /**
+     * @param  string $typeName
+     * @return string
+     */
+    private function convertColumnTypeName($typeName)
+    {
+        $mapping = [
+            'string' => 'string',
+            'text' => 'text',
+            'date' => 'date',
+            'time' => 'time',
+            'datetimetz' => 'datetime',
+            'datetime' => 'datetime',
+            'integer' => 'integer',
+            'bigint' => 'integer',
+            'smallint' => 'integer',
+            'boolean' => 'boolean',
+            'decimal' => 'float',
+            'float' => 'float',
+        ];
+        $defaultType = 'mixed';
+
+        return isset($mapping[$typeName]) ? $mapping[$typeName] : $defaultType;
     }
 }
