@@ -348,7 +348,7 @@ abstract class Controller
     protected function getColumnsFromTable($model)
     {
         $table = $model->getConnection()->getTablePrefix().$model->getTable();
-        $schema = $model->getConnection()->getDoctrineSchemaManager($table);
+        $schema = $model->getConnection()->getDoctrineSchemaManager();
         $databasePlatform = $schema->getDatabasePlatform();
         $databasePlatform->registerDoctrineTypeMapping('enum', 'string');
 
