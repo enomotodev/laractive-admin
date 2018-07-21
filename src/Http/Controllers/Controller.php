@@ -35,6 +35,11 @@ abstract class Controller
     protected $enum = [];
 
     /**
+     * @var int
+     */
+    protected $paginate = 30;
+
+    /**
      * The default layout view.
      *
      * @var string
@@ -83,7 +88,7 @@ abstract class Controller
     {
         $model = $this->model::newModelInstance();
         $columns = $this->getColumnsFromTable($model);
-        $collection = $this->model::paginate();
+        $collection = $this->model::paginate($this->paginate);
 
         return new HtmlString(
             view()->make(static::$defaultIndexView, [
