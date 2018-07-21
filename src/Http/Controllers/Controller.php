@@ -88,7 +88,7 @@ abstract class Controller
     {
         $model = $this->model::newModelInstance();
         $columns = $this->getColumnsFromTable($model);
-        $collection = $this->model::paginate($this->paginate);
+        $collection = $this->getQueryBuilderForIndex()->paginate($this->paginate);
 
         return new HtmlString(
             view()->make(static::$defaultIndexView, [
@@ -391,6 +391,14 @@ abstract class Controller
         }
 
         return $inputs;
+    }
+
+    /**
+     * @return \Illuminate\Database\Query\Builder
+     */
+    protected function getQueryBuilderForIndex()
+    {
+        return $this->model::orderBy('id', 'desc');
     }
 
     /**
