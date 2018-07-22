@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <title>{{ config('laractive-admin.title') }}</title>
     <meta charset="utf-8" />
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
@@ -19,7 +20,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="{{ route('admin.dashboard.index') }}">Admin</a>
+            <a class="navbar-brand" href="{{ route('admin.dashboard.index') }}">{{ config('laractive-admin.title') }}</a>
         </div>
 
         <ul class="nav navbar-top-links navbar-right">
