@@ -5,8 +5,11 @@ namespace Enomotodev\LaractiveAdmin;
 use Collective\Html\HtmlServiceProvider;
 use Collective\Html\FormFacade;
 use Collective\Html\HtmlFacade;
+use Intervention\Httpauth\Httpauth;
+use Intervention\Httpauth\HttpauthServiceProvider;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Enomotodev\LaractiveAdmin\Http\Middleware\LaractiveAdminAuthenticate;
+use Enomotodev\LaractiveAdmin\Http\Middleware\HttpauthAuthenticate;
 use Enomotodev\LaractiveAdmin\Console\InstallCommand;
 use Enomotodev\LaractiveAdmin\Console\UninstallCommand;
 use Enomotodev\LaractiveAdmin\Console\SeedCommand;
@@ -25,7 +28,7 @@ class ServiceProvider extends BaseServiceProvider
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'laractive-admin');
 
         $routeConfig = [
-            'middleware' => ['web', 'laractive-admin'],
+            'middleware' => ['web', 'laractive-admin', 'httpauth'],
             'namespace' => 'App\Admin',
             'prefix' => $this->app['config']->get('laractive-admin.route_prefix'),
             'as' => 'admin.',
@@ -99,7 +102,7 @@ class ServiceProvider extends BaseServiceProvider
 
         // Authentication
         $this->getRouter()->group([
-            'middleware' => ['web'],
+            'middleware' => ['web', 'httpauth'],
             'prefix' => $this->app['config']->get('laractive-admin.route_prefix'),
         ], function($router) {
             /** @var $router \Illuminate\Routing\Router */
@@ -131,6 +134,7 @@ class ServiceProvider extends BaseServiceProvider
         $this->mergeConfigFrom($this->configPath(), 'laractive-admin');
 
         $this->app->register(HtmlServiceProvider::class);
+        $this->app->register(HttpauthServiceProvider::class);
 
         $this->app->alias('Form', FormFacade::class);
         $this->app->alias('Html', HtmlFacade::class);
@@ -151,6 +155,7 @@ class ServiceProvider extends BaseServiceProvider
         ];
 
         $this->getRouter()->aliasMiddleware('laractive-admin', LaractiveAdminAuthenticate::class);
+        $this->getRouter()->aliasMiddleware('httpauth', HttpauthAuthenticate::class);
 
         $this->app->singleton('command.laractive-admin.install', function ($app) {
             return new InstallCommand($app['files'], $app['composer']);
@@ -160,6 +165,9 @@ class ServiceProvider extends BaseServiceProvider
         });
         $this->app->singleton('command.laractive-admin.seed', function () {
             return new SeedCommand;
+        });
+        $this->app->singleton('httpauth', function ($app) {
+            return new Httpauth($app['config']->get('laractive-admin.httpauth'));
         });
 
         $this->commands(['command.laractive-admin.install']);
