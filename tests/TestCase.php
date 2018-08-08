@@ -41,6 +41,7 @@ class TestCase extends BaseTestCase
     public function setUp()
     {
         $this->copyAdminFile();
+        $this->copyDashboardFile();
 
         parent::setUp();
 
@@ -91,5 +92,20 @@ class TestCase extends BaseTestCase
         }
 
         copy(__DIR__.'/../src/Console/stubs/AdminUser.stub', "{$directory}/AdminUser.php");
+    }
+
+    protected function copyDashboardFile()
+    {
+        if (! is_dir($directory = __DIR__.'/../vendor/laravel/laravel/app/Admin')) {
+            mkdir($directory, 0755, true);
+        }
+
+        copy(__DIR__.'/../src/Console/stubs/Dashboard.stub', "{$directory}/Dashboard.php");
+
+        if (! is_dir($directory = __DIR__.'/../vendor/laravel/laravel/resources/views/admin')) {
+            mkdir($directory, 0755, true);
+        }
+
+        copy(__DIR__.'/../src/Console/stubs/dashboard.blade.stub', "{$directory}/dashboard.blade.php");
     }
 }

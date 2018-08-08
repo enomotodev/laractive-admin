@@ -39,9 +39,6 @@
         <div class="navbar-default sidebar" role="navigation">
             <div class="sidebar-nav navbar-collapse">
                 <ul class="nav" id="side-menu">
-                    <li>
-                        <a href="{{ route('admin.dashboard.index') }}">Dashboard</a>
-                    </li>
                     @foreach (app(Enomotodev\LaractiveAdmin\Menu::class)->getPages() as $page)
                         <li>
                             <a href="{{ $page['url'] }}"{!! $page['name'] === $class ? 'class="active"' : '' !!}>{{ $page['name'] }}</a>
