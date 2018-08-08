@@ -10,6 +10,7 @@ use Intervention\Httpauth\HttpauthServiceProvider;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Enomotodev\LaractiveAdmin\Http\Middleware\LaractiveAdminAuthenticate;
 use Enomotodev\LaractiveAdmin\Http\Middleware\HttpauthAuthenticate;
+use Enomotodev\LaractiveAdmin\Http\Middleware\SharingDataWithAllViews;
 use Enomotodev\LaractiveAdmin\Console\InstallCommand;
 use Enomotodev\LaractiveAdmin\Console\UninstallCommand;
 use Enomotodev\LaractiveAdmin\Console\SeedCommand;
@@ -25,10 +26,10 @@ class ServiceProvider extends BaseServiceProvider
     {
         $this->publishes([$this->configPath() => config_path('laractive-admin.php')], 'config');
 
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'laractive-admin');
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'laractive-admin');
 
         $routeConfig = [
-            'middleware' => ['web', 'laractive-admin', 'httpauth'],
+            'middleware' => ['web', 'laractive-admin', 'httpauth', 'sharing-data'],
             'namespace' => 'App\Admin',
             'prefix' => $this->app['config']->get('laractive-admin.route_prefix'),
             'as' => 'admin.',
@@ -43,60 +44,61 @@ class ServiceProvider extends BaseServiceProvider
                 $files = $this->getFilesystem()->allFiles(app_path('Admin'));
 
                 foreach ($files as $file) {
-                    if ($file->getFilename() === 'DashboardController.php') {
-                        continue;
-                    }
-
                     $filename = $file->getFilename();
                     $className = substr($filename, 0, -4);
+                    /** @var \Enomotodev\LaractiveAdmin\Http\Controllers\Controller $adminClassName */
                     $adminClassName = "\App\Admin\\{$className}";
                     $adminClass = new $adminClassName;
-                    $model = new $adminClass->model;
-                    $routePrefix = $model->getTable();
-                    $router->get("{$routePrefix}", [
-                        'uses' => "\App\Admin\\{$className}@index",
-                        'as' => "{$routePrefix}.index",
-                    ]);
-                    $router->get("{$routePrefix}/{id}", [
-                        'uses' => "\App\Admin\\{$className}@show",
-                        'as' => "{$routePrefix}.show",
-                    ]);
-                    $router->get("{$routePrefix}/new", [
-                        'uses' => "\App\Admin\\{$className}@new",
-                        'as' => "{$routePrefix}.new",
-                    ]);
-                    $router->post("{$routePrefix}", [
-                        'uses' => "\App\Admin\\{$className}@create",
-                        'as' => "{$routePrefix}.create",
-                    ]);
-                    $router->get("{$routePrefix}/{id}/edit", [
-                        'uses' => "\App\Admin\\{$className}@edit",
-                        'as' => "{$routePrefix}.edit",
-                    ]);
-                    $router->put("{$routePrefix}/{id}", [
-                        'uses' => "\App\Admin\\{$className}@update",
-                        'as' => "{$routePrefix}.update",
-                    ]);
-                    $router->delete("{$routePrefix}/{id}", [
-                        'uses' => "\App\Admin\\{$className}@destroy",
-                        'as' => "{$routePrefix}.destroy",
-                    ]);
-                    $router->post("{$routePrefix}/{id}/comments", [
-                        'uses' => "\App\Admin\\{$className}@comments",
-                        'as' => "{$routePrefix}.comments",
-                    ]);
+                    $routePrefix = $adminClass->model ? (new $adminClass->model)->getTable() : strtolower($className);
+                    if ($adminClass->model) {
+                        $router->get("{$routePrefix}", [
+                            'uses' => "\App\Admin\\{$className}@index",
+                            'as' => "{$routePrefix}.index",
+                        ]);
+                        $router->get("{$routePrefix}/{id}", [
+                            'uses' => "\App\Admin\\{$className}@show",
+                            'as' => "{$routePrefix}.show",
+                        ]);
+                        $router->get("{$routePrefix}/new", [
+                            'uses' => "\App\Admin\\{$className}@new",
+                            'as' => "{$routePrefix}.new",
+                        ]);
+                        $router->post("{$routePrefix}", [
+                            'uses' => "\App\Admin\\{$className}@create",
+                            'as' => "{$routePrefix}.create",
+                        ]);
+                        $router->get("{$routePrefix}/{id}/edit", [
+                            'uses' => "\App\Admin\\{$className}@edit",
+                            'as' => "{$routePrefix}.edit",
+                        ]);
+                        $router->put("{$routePrefix}/{id}", [
+                            'uses' => "\App\Admin\\{$className}@update",
+                            'as' => "{$routePrefix}.update",
+                        ]);
+                        $router->delete("{$routePrefix}/{id}", [
+                            'uses' => "\App\Admin\\{$className}@destroy",
+                            'as' => "{$routePrefix}.destroy",
+                        ]);
+                        $router->post("{$routePrefix}/{id}/comments", [
+                            'uses' => "\App\Admin\\{$className}@comments",
+                            'as' => "{$routePrefix}.comments",
+                        ]);
+                    }
 
-                    app(Menu::class)->setPage([
-                        'name' => $className,
-                        'url' => route("admin.{$routePrefix}.index"),
-                    ]);
+                    foreach ($adminClassName::$actions as $route) {
+                        $router->{$route['method']}($route['uri'], [
+                            'uses' => "\App\Admin\\{$className}@{$route['action']}",
+                            'as' => "{$routePrefix}.{$route['action']}",
+                        ]);
+                    }
+
+                    if ($className !== 'Dashboard') {
+                        app(Menu::class)->setPage([
+                            'name' => $className,
+                            'url' => route("admin.{$routePrefix}.index"),
+                        ]);
+                    }
                 }
-
-                // Dashboard
-                $router->get('/', [
-                    'uses' => '\Enomotodev\LaractiveAdmin\Http\Controllers\DashboardController@index',
-                    'as' => 'dashboard.index',
-                ]);
             });
         }
 
@@ -104,7 +106,7 @@ class ServiceProvider extends BaseServiceProvider
         $this->getRouter()->group([
             'middleware' => ['web', 'httpauth'],
             'prefix' => $this->app['config']->get('laractive-admin.route_prefix'),
-        ], function($router) {
+        ], function ($router) {
             /** @var $router \Illuminate\Routing\Router */
             $router->get('login', [
                 'uses' => '\Enomotodev\LaractiveAdmin\Http\Controllers\Auth\LoginController@showLoginForm',
@@ -156,6 +158,7 @@ class ServiceProvider extends BaseServiceProvider
 
         $this->getRouter()->aliasMiddleware('laractive-admin', LaractiveAdminAuthenticate::class);
         $this->getRouter()->aliasMiddleware('httpauth', HttpauthAuthenticate::class);
+        $this->getRouter()->aliasMiddleware('sharing-data', SharingDataWithAllViews::class);
 
         $this->app->singleton('command.laractive-admin.install', function ($app) {
             return new InstallCommand($app['files'], $app['composer']);

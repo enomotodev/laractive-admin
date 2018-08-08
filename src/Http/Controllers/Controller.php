@@ -40,6 +40,11 @@ abstract class Controller
     protected $paginate = 30;
 
     /**
+     * @var array
+     */
+    public static $actions = [];
+
+    /**
      * The default layout view.
      *
      * @var string
@@ -92,9 +97,7 @@ abstract class Controller
 
         return new HtmlString(
             view()->make(static::$defaultIndexView, [
-                'class' => $this->getClassName(),
                 'table' => $this->getTable(),
-                'layoutView' => static::$defaultLayoutView,
                 'columns' => $columns,
                 'collection' => $collection,
                 'enum' => $this->enum,
@@ -117,9 +120,7 @@ abstract class Controller
 
         return new HtmlString(
             view()->make(static::$defaultShowView, [
-                'class' => $this->getClassName(),
                 'table' => $this->getTable(),
-                'layoutView' => static::$defaultLayoutView,
                 'model' => $model,
                 'commentColumns' => $commentColumns,
                 'enum' => $this->enum,
@@ -140,9 +141,7 @@ abstract class Controller
 
         return new HtmlString(
             view()->make(static::$defaultNewView, [
-                'class' => $this->getClassName(),
                 'table' => $this->getTable(),
-                'layoutView' => static::$defaultLayoutView,
                 'columns' => $columns,
                 'model' => $model,
                 'relations' => $relations,
@@ -195,9 +194,7 @@ abstract class Controller
 
         return new HtmlString(
             view()->make(static::$defaultEditView, [
-                'class' => $this->getClassName(),
                 'table' => $this->getTable(),
-                'layoutView' => static::$defaultLayoutView,
                 'columns' => $columns,
                 'model' => $model,
                 'relations' => $relations,
@@ -276,6 +273,18 @@ abstract class Controller
     /**
      * @return string
      */
+    public function getClassName()
+    {
+        try {
+            return (new ReflectionClass($this))->getShortName();
+        } catch (ReflectionException $e) {
+            return '';
+        }
+    }
+
+    /**
+     * @return string
+     */
     protected function getTable()
     {
         return (new $this->model)->getTable();
@@ -325,18 +334,6 @@ abstract class Controller
         }
 
         return $relations;
-    }
-
-    /**
-     * @return string
-     */
-    protected function getClassName()
-    {
-        try {
-            return (new ReflectionClass($this))->getShortName();
-        } catch (ReflectionException $e) {
-            return '';
-        }
     }
 
     /**

@@ -49,6 +49,7 @@ class InstallCommand extends Command
     {
         $this->createMigration();
         $this->createAdminUser();
+        $this->createDashboard();
 
         $this->info('LaractiveAdmin install successfully!');
     }
@@ -95,5 +96,23 @@ class InstallCommand extends Command
         }
 
         copy(__DIR__.'/stubs/AdminUser.stub', "{$directory}/AdminUser.php");
+    }
+
+    /**
+     * @return void
+     */
+    protected function createDashboard()
+    {
+        if (! is_dir($directory = app_path('Admin'))) {
+            mkdir($directory, 0755, true);
+        }
+
+        copy(__DIR__.'/stubs/Dashboard.stub', "{$directory}/Dashboard.php");
+
+        if (! is_dir($directory = resource_path('views/admin'))) {
+            mkdir($directory, 0755, true);
+        }
+
+        copy(__DIR__.'/stubs/dashboard.blade.stub', "{$directory}/dashboard.blade.php");
     }
 }

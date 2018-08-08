@@ -1,6 +1,6 @@
 @extends($layoutView)
 
-@section('title', 'DashboardController')
+@section('title', $class)
 
 @section('content')
     <div class="row">
