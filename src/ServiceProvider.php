@@ -2,18 +2,18 @@
 
 namespace Enomotodev\LaractiveAdmin;
 
-use Collective\Html\HtmlServiceProvider;
 use Collective\Html\FormFacade;
 use Collective\Html\HtmlFacade;
 use Intervention\Httpauth\Httpauth;
+use Collective\Html\HtmlServiceProvider;
+use Enomotodev\LaractiveAdmin\Console\SeedCommand;
 use Intervention\Httpauth\HttpauthServiceProvider;
-use Illuminate\Support\ServiceProvider as BaseServiceProvider;
-use Enomotodev\LaractiveAdmin\Http\Middleware\LaractiveAdminAuthenticate;
-use Enomotodev\LaractiveAdmin\Http\Middleware\HttpauthAuthenticate;
-use Enomotodev\LaractiveAdmin\Http\Middleware\SharingDataWithAllViews;
 use Enomotodev\LaractiveAdmin\Console\InstallCommand;
 use Enomotodev\LaractiveAdmin\Console\UninstallCommand;
-use Enomotodev\LaractiveAdmin\Console\SeedCommand;
+use Illuminate\Support\ServiceProvider as BaseServiceProvider;
+use Enomotodev\LaractiveAdmin\Http\Middleware\HttpauthAuthenticate;
+use Enomotodev\LaractiveAdmin\Http\Middleware\SharingDataWithAllViews;
+use Enomotodev\LaractiveAdmin\Http\Middleware\LaractiveAdminAuthenticate;
 
 class ServiceProvider extends BaseServiceProvider
 {
@@ -26,7 +26,7 @@ class ServiceProvider extends BaseServiceProvider
     {
         $this->publishes([$this->configPath() => config_path('laractive-admin.php')], 'config');
 
-        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'laractive-admin');
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'laractive-admin');
 
         $routeConfig = [
             'middleware' => ['web', 'laractive-admin', 'httpauth', 'sharing-data'],
@@ -107,7 +107,7 @@ class ServiceProvider extends BaseServiceProvider
             'middleware' => ['web', 'httpauth'],
             'prefix' => $this->app['config']->get('laractive-admin.route_prefix'),
         ], function ($router) {
-            /** @var $router \Illuminate\Routing\Router */
+            /* @var $router \Illuminate\Routing\Router */
             $router->get('login', [
                 'uses' => '\Enomotodev\LaractiveAdmin\Http\Controllers\Auth\LoginController@showLoginForm',
                 'as' => 'admin.login',
@@ -183,7 +183,7 @@ class ServiceProvider extends BaseServiceProvider
      */
     protected function configPath()
     {
-        return __DIR__ . '/../config/laractive-admin.php';
+        return __DIR__.'/../config/laractive-admin.php';
     }
 
     /**

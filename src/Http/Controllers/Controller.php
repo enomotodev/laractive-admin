@@ -3,14 +3,14 @@
 namespace Enomotodev\LaractiveAdmin\Http\Controllers;
 
 use ReflectionClass;
-use ReflectionException;
 use ReflectionMethod;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use ReflectionException;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\HtmlString;
-use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 abstract class Controller
 {
@@ -115,7 +115,7 @@ abstract class Controller
     {
         $model = $this->model::findOrFail($id);
         $commentColumns = array_filter($this->getColumnsFromTable($model->comments()->getRelated()), function ($type, $name) use ($model) {
-            return !in_array($name, ['id', 'updated_at', $model->comments()->getForeignKeyName(), $model->comments()->getMorphType()]);
+            return ! in_array($name, ['id', 'updated_at', $model->comments()->getForeignKeyName(), $model->comments()->getMorphType()]);
         }, ARRAY_FILTER_USE_BOTH);
 
         return new HtmlString(
@@ -170,7 +170,7 @@ abstract class Controller
                 continue;
             }
 
-            if (!empty($inputs[$key])) {
+            if (! empty($inputs[$key])) {
                 $model->{$relation['relation_name']}()->sync($inputs[$key]);
             }
         }
@@ -225,7 +225,7 @@ abstract class Controller
                 continue;
             }
 
-            if (!empty($inputs[$key])) {
+            if (! empty($inputs[$key])) {
                 $model->{$relation['relation_name']}()->sync($inputs[$key]);
             }
         }
@@ -301,10 +301,10 @@ abstract class Controller
 
         try {
             $methods = (new ReflectionClass($model))->getMethods(ReflectionMethod::IS_PUBLIC);
-            foreach($methods as $method) {
+            foreach ($methods as $method) {
                 if (
                     $method->class != get_class($model) ||
-                    !empty($method->getParameters()) ||
+                    ! empty($method->getParameters()) ||
                     $method->getName() == __FUNCTION__
                 ) {
                     continue;
@@ -380,7 +380,7 @@ abstract class Controller
             }, ARRAY_FILTER_USE_BOTH);
 
             foreach ($files as $key => $file) {
-                $fileName = Str::random(32).".".$request->{$key}->extension();
+                $fileName = Str::random(32).'.'.$request->{$key}->extension();
                 $request->{$key}->storePubliclyAs("public/{$this->getTable()}", $fileName);
 
                 $inputs[$key] = $fileName;

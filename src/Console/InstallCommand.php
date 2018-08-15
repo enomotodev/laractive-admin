@@ -3,9 +3,9 @@
 namespace Enomotodev\LaractiveAdmin\Console;
 
 use Illuminate\Console\Command;
-use Illuminate\Contracts\Filesystem\FileNotFoundException;
-use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Composer;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 
 class InstallCommand extends Command
 {
@@ -67,7 +67,7 @@ class InstallCommand extends Command
         try {
             foreach ($migrations as $migration) {
                 $fullPath = $this->createBaseMigration($migration);
-                $this->files->put($fullPath, $this->files->get(__DIR__ . "/stubs/{$migration}.stub"));
+                $this->files->put($fullPath, $this->files->get(__DIR__."/stubs/{$migration}.stub"));
             }
             $this->composer->dumpAutoloads();
         } catch (FileNotFoundException $exception) {

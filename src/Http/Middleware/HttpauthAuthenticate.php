@@ -3,8 +3,8 @@
 namespace Enomotodev\LaractiveAdmin\Http\Middleware;
 
 use Closure;
-use Illuminate\Auth\Middleware\Authenticate;
 use Intervention\Httpauth\Facades\Httpauth;
+use Illuminate\Auth\Middleware\Authenticate;
 
 class HttpauthAuthenticate extends Authenticate
 {

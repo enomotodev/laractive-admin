@@ -3,8 +3,8 @@
 namespace Enomotodev\LaractiveAdmin\Tests\Console;
 
 use Enomotodev\LaractiveAdmin\AdminUser;
-use Enomotodev\LaractiveAdmin\Console\SeedCommand;
 use Enomotodev\LaractiveAdmin\Tests\TestCase;
+use Enomotodev\LaractiveAdmin\Console\SeedCommand;
 
 class SeedCommandTest extends TestCase
 {

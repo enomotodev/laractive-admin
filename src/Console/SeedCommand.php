@@ -32,7 +32,7 @@ class SeedCommand extends Command
      */
     public function handle()
     {
-        if (!AdminUser::where('email', 'admin@example.com')->first()) {
+        if (! AdminUser::where('email', 'admin@example.com')->first()) {
             AdminUser::create([
                 'email' => self::ADMIN_USER_EMAIL,
                 'password' => \Hash::make(self::ADMIN_USER_PASSWORD),
