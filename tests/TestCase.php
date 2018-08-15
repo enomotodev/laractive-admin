@@ -2,13 +2,13 @@
 
 namespace Enomotodev\LaractiveAdmin\Tests;
 
-use Illuminate\Contracts\Console\Kernel;
-use Illuminate\Support\Facades\Hash;
-use Collective\Html\HtmlServiceProvider;
 use Collective\Html\FormFacade;
 use Collective\Html\HtmlFacade;
-use Laravel\BrowserKitTesting\TestCase as BaseTestCase;
+use Illuminate\Support\Facades\Hash;
+use Collective\Html\HtmlServiceProvider;
+use Illuminate\Contracts\Console\Kernel;
 use Enomotodev\LaractiveAdmin\ServiceProvider;
+use Laravel\BrowserKitTesting\TestCase as BaseTestCase;
 
 class TestCase extends BaseTestCase
 {
@@ -45,7 +45,7 @@ class TestCase extends BaseTestCase
 
         parent::setUp();
 
-        $this->app['config']->set('app.key', "base64:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=");
+        $this->app['config']->set('app.key', 'base64:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=');
         $this->app['config']->set('database.default', env('DB_CONNECTION'));
         $this->app['config']->set('database.connections.mysql.host', env('DB_HOST'));
         $this->app['config']->set('database.connections.mysql.port', env('DB_PORT'));
@@ -80,7 +80,7 @@ class TestCase extends BaseTestCase
         foreach ($migrations as $migration) {
             $this->app['files']->put(
                 database_path("migrations/2018_01_01_000000_{$migration}.php"),
-                $this->app['files']->get(__DIR__ . "/../src/Console/stubs/{$migration}.stub")
+                $this->app['files']->get(__DIR__."/../src/Console/stubs/{$migration}.stub")
             );
         }
     }

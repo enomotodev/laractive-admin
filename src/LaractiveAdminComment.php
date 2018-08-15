@@ -2,7 +2,6 @@
 
 namespace Enomotodev\LaractiveAdmin;
 
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class LaractiveAdminComment extends Authenticatable
