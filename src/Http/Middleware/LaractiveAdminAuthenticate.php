@@ -17,7 +17,11 @@ class LaractiveAdminAuthenticate extends Authenticate
     public function handle($request, Closure $next, ...$guards)
     {
         try {
-            parent::authenticate(['laractive-admin']);
+            if ((float) str_limit(app()->version(), 3, '') >= 5.7) {
+                $this->authenticate($request, ['laractive-admin']);
+            } else {
+                parent::authenticate(['laractive-admin']);
+            }
         } catch (AuthenticationException $e) {
             return redirect()->guest(route('admin.login'));
         }
